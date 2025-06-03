@@ -119,7 +119,7 @@ const VideoNotFound = ({ width, height }: { width: number; height: number }) => 
 );
 
 export default function Video() {
-  const [size, setSize] = useState({ width: 400, height: 350 });
+  const [size, setSize] = useState({ width: 600, height: 450 });
   const [isResizing, setIsResizing] = useState(false);
   const [videoData, setVideoData] = useState<VideoData | null>(null);
   const [showUrlInput, setShowUrlInput] = useState(false);
@@ -396,7 +396,7 @@ export default function Video() {
   return (
     <DraggableWrapper
       id="video-item"
-      initialPosition={{ x: 400, y: 200 }}
+      initialPosition={{ x: 100, y: 100 }}
       className={`${isResizing ? 'pointer-events-none' : 'cursor-grab active:cursor-grabbing'}`}
     >
       <Resizable
@@ -405,8 +405,8 @@ export default function Video() {
         onResize={onResize}
         onResizeStart={onResizeStart}
         onResizeStop={onResizeStop}
-        minConstraints={[300, 300]}
-        maxConstraints={[1920, 1080]}
+        minConstraints={[400, 300]}
+        maxConstraints={[2560, 1440]}
         resizeHandles={['se', 'e', 's']}
       >
         <div 
@@ -531,7 +531,7 @@ export default function Video() {
                 title="Charger depuis un fichier"
                 aria-label="Charger une vidéo depuis un fichier"
                 disabled={isLoading}
-                className="bg-chart-4"
+                className="bg-chart-1"
               >
                 <Upload className="w-4 h-4" />
               </Button>
@@ -544,7 +544,7 @@ export default function Video() {
                 title="Charger depuis une URL"
                 aria-label="Charger une vidéo depuis une URL"
                 disabled={isLoading}
-                className="bg-chart-4"
+                className="bg-chart-1"
               >
                 <Link className="w-4 h-4" />
               </Button>
@@ -583,7 +583,7 @@ export default function Video() {
                     onClick={handleUrlSubmit}
                     size="sm"
                     variant="noShadow"
-                    className="px-2 py-1 bg-chart-4 hover:bg-green-500 text-white border-green-600"
+                    className="cursor-pointer px-2 py-1 bg-green-500 text-green-800 border-green-400 hover:active:bg-green-600"
                     onMouseDown={(e) => e.stopPropagation()}
                     disabled={isLoading || !urlInput.trim()}
                     aria-label="Valider l'URL"
@@ -594,7 +594,7 @@ export default function Video() {
                     onClick={toggleUrlInput}
                     size="sm"
                     variant="noShadow"
-                    className="px-2 py-1 bg-chart-3"
+                    className="cursor-pointer px-2 py-1 bg-red-500 border-black hover:active:bg-red-600"
                     onMouseDown={(e) => e.stopPropagation()}
                     disabled={isLoading}
                     aria-label="Annuler"

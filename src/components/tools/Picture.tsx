@@ -21,7 +21,7 @@ const ImageNotFound = ({ width, height }: { width: number; height: number }) => 
 );
 
 export default function Picture() {
-  const [size, setSize] = useState({ width: 250, height: 300 });
+  const [size, setSize] = useState({ width: 400, height: 350 });
   const [isResizing, setIsResizing] = useState(false);
   const [imageUrl, setImageUrl] = useState("");
   const [showUrlInput, setShowUrlInput] = useState(false);
@@ -149,7 +149,7 @@ export default function Picture() {
   return (
     <DraggableWrapper
       id="picture-item"
-      initialPosition={{ x: 800, y: 200 }}
+      initialPosition={{ x: 700, y: 200 }}
       className={`${isResizing ? 'pointer-events-none' : 'cursor-grab active:cursor-grabbing'}`}
     >
       <Resizable
@@ -158,8 +158,8 @@ export default function Picture() {
         onResize={onResize}
         onResizeStart={onResizeStart}
         onResizeStop={onResizeStop}
-        minConstraints={[300, 300]}
-        maxConstraints={[1920, 1080]}
+        minConstraints={[300, 250]}
+        maxConstraints={[2560, 1440]}
         resizeHandles={['se', 'e', 's']}
       >
         <div 
@@ -282,7 +282,7 @@ export default function Picture() {
                 title="Charger depuis un fichier"
                 aria-label="Charger une image depuis un fichier"
                 disabled={isLoading}
-                className="bg-chart-4"
+                className="bg-chart-1"
               >
                 <Upload className="w-4 h-4" />
               </Button>
@@ -295,7 +295,7 @@ export default function Picture() {
                 title="Charger depuis une URL"
                 aria-label="Charger une image depuis une URL"
                 disabled={isLoading}
-                className="bg-chart-4"
+                className="bg-chart-1"
               >
                 <Link className="w-4 h-4" />
               </Button>
@@ -334,7 +334,7 @@ export default function Picture() {
                     onClick={handleUrlSubmit}
                     size="sm"
                     variant="noShadow"
-                    className="px-2 py-1 bg-chart-4 hover:bg-green-500 text-white border-green-600"
+                    className="cursor-pointer px-2 py-1 bg-green-500 text-green-800 border-green-400 hover:active:bg-green-600"
                     onMouseDown={(e) => e.stopPropagation()}
                     disabled={isLoading || !urlInput.trim()}
                     aria-label="Valider l'URL"
@@ -345,7 +345,7 @@ export default function Picture() {
                     onClick={toggleUrlInput}
                     size="sm"
                     variant="noShadow"
-                    className="px-2 py-1 bg-chart-3"
+                    className="cursor-pointer px-2 py-1 bg-red-500 border-black hover:active:bg-red-600"
                     onMouseDown={(e) => e.stopPropagation()}
                     disabled={isLoading}
                     aria-label="Annuler"

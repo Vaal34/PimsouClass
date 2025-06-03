@@ -8,6 +8,8 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import Timer from "./components/tools/Chronometre";
+import Groupe from "./components/tools/Groupe";
 
 function App() {
   return (
@@ -19,7 +21,7 @@ function App() {
           </div>
         <div className="h-screen w-full p-8 relative">
           <DndKitWrapper>
-            <DraggableItem
+            {/* <DraggableItem
               id="item-2"
               title="Consigne"
               initialPosition={{ x: 400, y: 200 }}
@@ -30,8 +32,31 @@ function App() {
             >
               <Consigne />
             </DraggableItem>
+            <DraggableItem
+              id="item-1"
+              title="Timer"
+              initialPosition={{ x: 800, y: 400 }}
+              autoResize={true}
+              minWidth="200px"
+              maxWidth="1300px"
+              className="p-6"
+            >
+              <Timer />
+            </DraggableItem>
             <Picture />
-            <Video />
+            <Video /> */}
+            /* 
+            <DraggableItem
+              id="item-3"
+              title="Groupe"
+              initialPosition={{ x: 400, y: 200 }}
+              autoResize={true}
+              minWidth="200px"
+              maxWidth="1300px"
+              className="p-6"
+            >
+              <Groupe />
+            </DraggableItem>
           </DndKitWrapper>
         </div>
       </SidebarInset>

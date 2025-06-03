@@ -5,7 +5,11 @@ const config: Config = {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
-  darkMode: 'class'
+  darkMode: 'class',
+  plugins: [
+    // @ts-ignore
+    require('tailwind-text-stroke')
+  ]
 }
 
-export default config 
+export default config
