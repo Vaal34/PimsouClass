@@ -119,7 +119,7 @@ const VideoNotFound = ({ width, height }: { width: number; height: number }) => 
 );
 
 export default function Video() {
-  const [size, setSize] = useState({ width: 600, height: 450 });
+  const [size, setSize] = useState({ width: 400, height: 300 });
   const [isResizing, setIsResizing] = useState(false);
   const [videoData, setVideoData] = useState<VideoData | null>(null);
   const [showUrlInput, setShowUrlInput] = useState(false);

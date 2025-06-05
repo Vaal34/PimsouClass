@@ -16,12 +16,12 @@ function App() {
     <SidebarProvider>
       <AddTools />
       <SidebarInset>
-          <div className="absolute top-5 left-5">
-            <SidebarTrigger />
-          </div>
-        <div className="h-screen w-full p-8 relative">
+        <div className="absolute top-5 left-5">
+          <SidebarTrigger />
+        </div>
+        <div className="h-screen w-full p-8 relative wallpaper">
           <DndKitWrapper>
-            {/* <DraggableItem
+            <DraggableItem
               id="item-2"
               title="Consigne"
               initialPosition={{ x: 400, y: 200 }}
@@ -32,6 +32,8 @@ function App() {
             >
               <Consigne />
             </DraggableItem>
+            <Picture />
+            <Video />
             <DraggableItem
               id="item-1"
               title="Timer"
@@ -43,9 +45,6 @@ function App() {
             >
               <Timer />
             </DraggableItem>
-            <Picture />
-            <Video /> */}
-            /* 
             <DraggableItem
               id="item-3"
               title="Groupe"

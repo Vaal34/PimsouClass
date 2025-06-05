@@ -16,7 +16,7 @@
   --chart-1: #7A83FF; /* Bleu lavande (couleur principale) */
   --chart-2: #A26CFF; /* Violet moyen lumineux */
   --chart-3: #FF6EC7; /* Rose fuchsia doux */
-  --chart-4: #5EDFFF; /* Bleu clair cyan pastel */
+  --chart-4: #F9F5EE; /* Bleu clair cyan pastel */
   --chart-5: #D1B3FF; /* Lilas pâle / Fond ou élément secondaire */
   --chart-active-dot: #000;
 }
@@ -250,4 +250,14 @@
 .dark ::-webkit-scrollbar-corner {
   background: var(--background);
   border: 3px solid var(--ring);
+}
+
+.wallpaper {
+  width: 100%;
+  height: 100%;
+  --color: #E2E2E2;
+  background-color: #F3F3F3;
+  background-image: linear-gradient(0deg, transparent 24%, var(--color) 25%, var(--color) 26%, transparent 27%,transparent 74%, var(--color) 75%, var(--color) 76%, transparent 77%,transparent),
+      linear-gradient(90deg, transparent 24%, var(--color) 25%, var(--color) 26%, transparent 27%,transparent 74%, var(--color) 75%, var(--color) 76%, transparent 77%,transparent);
+  background-size: 70px 70px;
 }

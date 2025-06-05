@@ -21,7 +21,7 @@ const ImageNotFound = ({ width, height }: { width: number; height: number }) => 
 );
 
 export default function Picture() {
-  const [size, setSize] = useState({ width: 400, height: 350 });
+  const [size, setSize] = useState({ width: 300, height: 250 });
   const [isResizing, setIsResizing] = useState(false);
   const [imageUrl, setImageUrl] = useState("");
   const [showUrlInput, setShowUrlInput] = useState(false);

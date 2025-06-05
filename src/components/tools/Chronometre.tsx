@@ -124,7 +124,7 @@ export default function Chronometre() {
 
   return (
     <div
-      className="gap-3 flex flex-col transition-all duration-300 ease-in-out max-w-md"
+      className="gap-3 flex flex-col transition-all duration-300 ease-in-out max-w-md w-[250px]"
       onPointerDown={(e) => e.stopPropagation()}
       onMouseDown={(e) => e.stopPropagation()}
       onTouchStart={(e) => e.stopPropagation()}

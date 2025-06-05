@@ -110,18 +110,16 @@ const data = {
 
 export function AddTools({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
-    <Sidebar 
-      collapsible="offcanvas" 
-      variant="sidebar"
-      {...props} 
-    >
+    <Sidebar collapsible="offcanvas" variant="sidebar" {...props}>
       <SidebarHeader className="p-4 bg-chart-1">
         <div className="flex items-center justify-between">
-        <h2 className="text-left text-3xl italic text-black font-black">Outils</h2>
-        <SidebarTrigger  />
+          <h2 className="text-left text-3xl italic text-black font-black">
+            Outils
+          </h2>
+          <SidebarTrigger />
         </div>
       </SidebarHeader>
-      <SidebarContent className="flex-1 overflow-y-auto">
+      <SidebarContent className="flex-1 overflow-y-auto bg-chart-4">
         <SidebarGroup className="p-4">
           <SidebarGroupLabel className="italic text-sm font-semibold mb-3">
             Outils par Catégorie
@@ -154,9 +152,12 @@ export function AddTools({ ...props }: React.ComponentProps<typeof Sidebar>) {
                           <SidebarMenuSubItem key={subItem.title}>
                             <SidebarMenuSubButton
                               asChild
-                              className="cursor-pointer bg-white hover:bg-chart-1 transition-colors duration-200 w-full justify-start p-2 h-auto text-sm"
+                              className="cursor-pointer bg-chart-1/20 hover:bg-chart-1/60 w-full justify-start p-2 h-auto text-sm"
                             >
-                              <a href="#" className="flex items-center gap-2">
+                              <a
+                                href="#"
+                                className="flex items-center gap-2 hover:scale-105 transition-transform duration-[500ms]"
+                              >
                                 {subItem.icon && (
                                   <subItem.icon className="size-4" />
                                 )}
@@ -173,7 +174,7 @@ export function AddTools({ ...props }: React.ComponentProps<typeof Sidebar>) {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-        
+
         <SidebarGroup className="p-4 group-data-[collapsible=icon]:hidden">
           <SidebarGroupLabel className="italic text-sm font-semibold text-black mb-3">
             Tous les Outils
@@ -184,9 +185,12 @@ export function AddTools({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <SidebarMenuItem key={item.name}>
                   <SidebarMenuButton
                     asChild
-                    className="cursor-pointer hover:bg-chart-1 transition-colors duration-200 w-full justify-start p-2 h-auto"
+                    className="cursor-pointer bg-chart-1/20 hover:bg-chart-1/60 w-full justify-start p-2 h-auto text-sm"
                   >
-                    <a href="#" className="flex items-center gap-2">
+                    <a
+                      href="#"
+                      className="flex items-center gap-2 hover:scale-105 transition-transform duration-[500ms]"
+                    >
                       <item.icon className="size-4" />
                       <span className="text-sm">{item.name}</span>
                     </a>
