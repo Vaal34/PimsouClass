@@ -10,52 +10,84 @@ import {
 } from "@/components/ui/sidebar";
 import Timer from "./components/tools/Chronometre";
 import Groupe from "./components/tools/Groupe";
+import { useState } from "react";
+
+const toolsConfig = {
+  timer: {
+    component: Timer,
+    title: "Timer",
+    isDraggable: true,
+    position: { x: 300, y: 100 },
+  },
+  consigne: {
+    component: Consigne,
+    title: "Consigne",
+    isDraggable: true,
+    position: { x: 700, y: 100 },
+  },
+  photo: {
+    component: Picture,
+    title: "Photo",
+    isDraggable: false,
+    position: { x: 600, y: 100 },
+  },
+  vidéo: {
+    component: Video,
+    title: "Vidéo",
+    isDraggable: false,
+    position: { x: 700, y: 100 },
+  },
+  groupe: {
+    component: Groupe,
+    title: "Groupe",
+    isDraggable: true,
+    position: { x: 1200, y: 100 },
+  },
+};
 
 function App() {
+  const [activeTools, setActiveTools] = useState([]);
+
   return (
     <SidebarProvider>
-      <AddTools />
+      <AddTools setActiveTools={setActiveTools} />
       <SidebarInset>
         <div className="absolute top-5 left-5">
           <SidebarTrigger />
         </div>
         <div className="h-screen w-full p-8 relative wallpaper">
           <DndKitWrapper>
-            <DraggableItem
-              id="item-2"
-              title="Consigne"
-              initialPosition={{ x: 400, y: 200 }}
-              autoResize={true}
-              minWidth="200px"
-              maxWidth="1300px"
-              className="p-6"
-            >
-              <Consigne />
-            </DraggableItem>
-            <Picture />
-            <Video />
-            <DraggableItem
-              id="item-1"
-              title="Timer"
-              initialPosition={{ x: 800, y: 400 }}
-              autoResize={true}
-              minWidth="200px"
-              maxWidth="1300px"
-              className="p-6"
-            >
-              <Timer />
-            </DraggableItem>
-            <DraggableItem
-              id="item-3"
-              title="Groupe"
-              initialPosition={{ x: 400, y: 200 }}
-              autoResize={true}
-              minWidth="200px"
-              maxWidth="1300px"
-              className="p-6"
-            >
-              <Groupe />
-            </DraggableItem>
+            {activeTools.map((toolName: string, index: number) => {
+              const toolKey =
+                toolName.toLowerCase() as keyof typeof toolsConfig;
+              const toolConfig = toolsConfig[toolKey];
+
+              if (!toolConfig) return null;
+
+              const ToolComponent = toolConfig.component;
+
+              if (toolConfig.isDraggable) {
+                return (
+                  <DraggableItem
+                    key={`${toolName}-${index}`}
+                    id={`${toolName}-${index}`}
+                    title={toolConfig.title}
+                    initialPosition={toolConfig.position}
+                  >
+                    <ToolComponent key={`${toolName}-${index}`} />
+                  </DraggableItem>
+                );
+              } else {
+                // Pour les composants non-draggables qui utilisent DraggableWrapper en interne
+                return (
+                  <ToolComponent 
+                    key={`${toolName}-${index}`}
+                    id={`${toolName}-${index}`}
+                    initialPosition={toolConfig.position}
+                  />
+                );
+              }
+            })}
           </DndKitWrapper>
         </div>
       </SidebarInset>

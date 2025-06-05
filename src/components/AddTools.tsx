@@ -108,7 +108,16 @@ const data = {
   ],
 };
 
-export function AddTools({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function AddTools({
+  setActiveTools,
+  ...props
+}: React.ComponentProps<typeof Sidebar> & {
+  setActiveTools: (tools: any) => void;
+}) {
+  const handleAdd = (toolName: string) => {
+    setActiveTools((prev: string[]) => [...prev, toolName]);
+  };
+
   return (
     <Sidebar collapsible="offcanvas" variant="sidebar" {...props}>
       <SidebarHeader className="p-4 bg-chart-1">
@@ -154,15 +163,15 @@ export function AddTools({ ...props }: React.ComponentProps<typeof Sidebar>) {
                               asChild
                               className="cursor-pointer bg-chart-1/20 hover:bg-chart-1/60 w-full justify-start p-2 h-auto text-sm"
                             >
-                              <a
-                                href="#"
+                              <button
                                 className="flex items-center gap-2 hover:scale-105 transition-transform duration-[500ms]"
+                                onClick={() => handleAdd(subItem.title)}
                               >
                                 {subItem.icon && (
                                   <subItem.icon className="size-4" />
                                 )}
                                 <span>{subItem.title}</span>
-                              </a>
+                              </button>
                             </SidebarMenuSubButton>
                           </SidebarMenuSubItem>
                         ))}
@@ -187,13 +196,13 @@ export function AddTools({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     asChild
                     className="cursor-pointer bg-chart-1/20 hover:bg-chart-1/60 w-full justify-start p-2 h-auto text-sm"
                   >
-                    <a
-                      href="#"
+                    <button
                       className="flex items-center gap-2 hover:scale-105 transition-transform duration-[500ms]"
+                      onClick={() => handleAdd(item.name)}
                     >
-                      <item.icon className="size-4" />
-                      <span className="text-sm">{item.name}</span>
-                    </a>
+                      {item.icon && <item.icon className="size-4" />}
+                      <span>{item.name}</span>
+                    </button>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}

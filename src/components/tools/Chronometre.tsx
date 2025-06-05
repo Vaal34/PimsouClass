@@ -124,7 +124,7 @@ export default function Chronometre() {
 
   return (
     <div
-      className="gap-3 flex flex-col transition-all duration-300 ease-in-out max-w-md w-[250px]"
+      className="gap-3 flex flex-col transition-all duration-300 ease-in-out max-w-md w-full"
       onPointerDown={(e) => e.stopPropagation()}
       onMouseDown={(e) => e.stopPropagation()}
       onTouchStart={(e) => e.stopPropagation()}
@@ -196,13 +196,13 @@ export default function Chronometre() {
 
       {/* Contrôles principaux (masquables) */}
       {showControls && (
-        <div className="gap-3 flex justify-center">
+        <div className="gap-3 flex justify-between">
           <Button
             onClick={toggleTimer}
             variant="default"
             size="sm"
             disabled={time === 0 && !isRunning}
-            className="bg-chart-1 cursor-pointer w-[90px]"
+            className="bg-chart-1 cursor-pointer w-[100px]"
           >
             {isRunning ? (
               <>
@@ -221,7 +221,7 @@ export default function Chronometre() {
             onClick={resetTimer}
             variant="neutral"
             size="sm"
-            className="cursor-pointer w-[90px]"
+            className="cursor-pointer w-[100px]"
           >
             <RotateCcw className="w-4 h-4" />
             Reset

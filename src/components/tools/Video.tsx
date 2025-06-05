@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Resizable } from "react-resizable";
 import { DraggableWrapper } from "../DndKitWrapper";
 import { Button } from "../ui/button";
@@ -118,7 +118,12 @@ const VideoNotFound = ({ width, height }: { width: number; height: number }) => 
   </div>
 );
 
-export default function Video() {
+interface VideoProps {
+  id?: string;
+  initialPosition?: { x: number; y: number };
+}
+
+export default function Video({ id = "video-item", initialPosition = { x: 100, y: 100 } }: VideoProps = {}) {
   const [size, setSize] = useState({ width: 400, height: 300 });
   const [isResizing, setIsResizing] = useState(false);
   const [videoData, setVideoData] = useState<VideoData | null>(null);
@@ -131,12 +136,45 @@ export default function Video() {
   const [tempCaption, setTempCaption] = useState("");
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
+  const [maxConstraints, setMaxConstraints] = useState<[number, number]>([2560, 1440]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const captionInputRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
+  // Calculer les contraintes maximales basées sur la taille de la fenêtre
+  useEffect(() => {
+    const updateMaxConstraints = () => {
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+      // Laisser une marge de 20px de chaque côté
+      const maxWidth = Math.max(400, viewportWidth - 40);
+      const maxHeight = Math.max(300, viewportHeight - 40);
+      setMaxConstraints([maxWidth, maxHeight]);
+    };
+
+    updateMaxConstraints();
+    window.addEventListener('resize', updateMaxConstraints);
+    
+    return () => {
+      window.removeEventListener('resize', updateMaxConstraints);
+    };
+  }, []);
+
   const onResize = (_event: any, { size }: { size: { width: number; height: number } }) => {
     setSize(size);
+    
+    // Vérifier que l'élément ne dépasse pas les limites du viewport après redimensionnement
+    // Note: cette vérification est principalement préventive car les maxConstraints limitent déjà le redimensionnement
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    
+    if (size.width > viewportWidth - 40 || size.height > viewportHeight - 40) {
+      const constrainedSize = {
+        width: Math.min(size.width, viewportWidth - 40),
+        height: Math.min(size.height, viewportHeight - 40)
+      };
+      setSize(constrainedSize);
+    }
   };
 
   const onResizeStart = () => {
@@ -395,20 +433,20 @@ export default function Video() {
 
   return (
     <DraggableWrapper
-      id="video-item"
-      initialPosition={{ x: 100, y: 100 }}
+      id={id}
+      initialPosition={initialPosition}
       className={`${isResizing ? 'pointer-events-none' : 'cursor-grab active:cursor-grabbing'}`}
     >
-      <Resizable
-        width={size.width}
-        height={size.height}
-        onResize={onResize}
-        onResizeStart={onResizeStart}
-        onResizeStop={onResizeStop}
-        minConstraints={[400, 300]}
-        maxConstraints={[2560, 1440]}
-        resizeHandles={['se', 'e', 's']}
-      >
+              <Resizable
+          width={size.width}
+          height={size.height}
+          onResize={onResize}
+          onResizeStart={onResizeStart}
+          onResizeStop={onResizeStop}
+          minConstraints={[400, 300]}
+          maxConstraints={maxConstraints}
+          resizeHandles={['se', 'e', 's']}
+        >
         <div 
           style={{ width: size.width, height: size.height }}
           onMouseDown={(e) => {

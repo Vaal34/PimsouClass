@@ -53,12 +53,30 @@ interface DraggableElement {
 
 // Hook personnalisé pour gérer les positions des éléments
 const useDraggablePositions = (initialElements: DraggableElement[] = []) => {
-  const [elements, setElements] = useState<Record<string, Position>>(
-    initialElements.reduce((acc, element) => {
+  const [elements, setElements] = useState<Record<string, Position>>(() => {
+    return initialElements.reduce((acc, element) => {
       acc[element.id] = element.position;
       return acc;
-    }, {} as Record<string, Position>)
-  );
+    }, {} as Record<string, Position>);
+  });
+
+  // Mettre à jour les positions si de nouveaux éléments sont ajoutés
+  React.useEffect(() => {
+    setElements(prevElements => {
+      const newElements = initialElements.reduce((acc, element) => {
+        // Garder la position existante si elle existe, sinon utiliser la position initiale
+        acc[element.id] = prevElements[element.id] || element.position;
+        return acc;
+      }, {} as Record<string, Position>);
+      
+      // Vérifier s'il y a vraiment des changements
+      const hasChanges = initialElements.some(element => 
+        !prevElements[element.id]
+      );
+      
+      return hasChanges ? newElements : prevElements;
+    });
+  }, [initialElements]);
 
   const updatePosition = (id: string, position: Position) => {
     setElements(prev => ({
@@ -103,7 +121,8 @@ export const DraggableItem: React.FC<DraggableItemProps> = ({
   });
 
   // Récupérer la position depuis le contexte parent
-  const position = React.useContext(PositionContext)?.[id] || initialPosition;
+  const contextPositions = React.useContext(PositionContext);
+  const position = contextPositions?.[id] ?? initialPosition;
 
   // Logique de style adaptée au redimensionnement
   const style = {
@@ -187,7 +206,8 @@ export const DraggableWrapper: React.FC<DraggableWrapperProps> = ({
   });
 
   // Récupérer la position depuis le contexte parent
-  const position = React.useContext(PositionContext)?.[id] || initialPosition;
+  const contextPositions = React.useContext(PositionContext);
+  const position = contextPositions?.[id] ?? initialPosition;
 
   const style = {
     position: 'absolute' as const,
@@ -218,24 +238,25 @@ interface DndKitWrapperProps {
   children: ReactNode;
 }
 
-// Modifier personnalisé pour limiter au body
-const restrictToBodyBounds = ({ transform, draggingNodeRect, windowRect }: any) => {
-  if (!draggingNodeRect || !windowRect) {
+// Modifier personnalisé pour limiter au viewport
+const restrictToViewportBounds = ({ transform, draggingNodeRect }: any) => {
+  if (!draggingNodeRect) {
     return transform;
   }
 
-  const bodyRect = document.body.getBoundingClientRect();
+  const viewportWidth = window.innerWidth;
+  const viewportHeight = window.innerHeight;
+  
+  // Calculer les limites en prenant en compte la taille de l'élément
+  const minX = -draggingNodeRect.left;
+  const maxX = viewportWidth - draggingNodeRect.right;
+  const minY = -draggingNodeRect.top;
+  const maxY = viewportHeight - draggingNodeRect.bottom;
   
   return {
     ...transform,
-    x: Math.min(
-      Math.max(transform.x, bodyRect.left - draggingNodeRect.left),
-      bodyRect.right - draggingNodeRect.right
-    ),
-    y: Math.min(
-      Math.max(transform.y, bodyRect.top - draggingNodeRect.top),
-      bodyRect.bottom - draggingNodeRect.bottom
-    ),
+    x: Math.min(Math.max(transform.x, minX), maxX),
+    y: Math.min(Math.max(transform.y, minY), maxY),
   };
 };
 
@@ -245,16 +266,18 @@ export const DndKitWrapper: React.FC<DndKitWrapperProps> = ({ children }) => {
   const [_draggedElement, setDraggedElement] = useState<React.ReactElement | null>(null);
 
   // Extraire les positions initiales des enfants
-  const initialElements = React.Children.toArray(children)
-    .filter((child): child is React.ReactElement<any> => 
-      React.isValidElement(child) && 
-      typeof child.type !== 'string' &&
-      ((child.props as any)?.id !== undefined)
-    )
-    .map(child => ({
-      id: (child.props as any).id,
-      position: (child.props as any).initialPosition || { x: 0, y: 0 }
-    }));
+  const initialElements = React.useMemo(() => {
+    return React.Children.toArray(children)
+      .filter((child): child is React.ReactElement<any> => 
+        React.isValidElement(child) && 
+        typeof child.type !== 'string' &&
+        ((child.props as any)?.id !== undefined)
+      )
+      .map(child => ({
+        id: (child.props as any).id,
+        position: (child.props as any).initialPosition || { x: 0, y: 0 }
+      }));
+  }, [children]);
 
   const { elements, updatePosition } = useDraggablePositions(initialElements);
 
@@ -296,13 +319,35 @@ export const DndKitWrapper: React.FC<DndKitWrapperProps> = ({ children }) => {
     const { active, delta } = event;
     
     if (active && delta) {
-      const currentPosition = elements[active.id as string] || { x: 0, y: 0 };
-      const newPosition = {
-        x: Math.max(0, currentPosition.x + delta.x),
-        y: Math.max(0, currentPosition.y + delta.y),
+      const activeId = active.id as string;
+      const currentPosition = elements[activeId];
+      
+      // Si la position actuelle n'existe pas, utiliser la position initiale de l'élément
+      let startPosition = currentPosition;
+      if (!startPosition) {
+        const initialElement = initialElements.find(el => el.id === activeId);
+        startPosition = initialElement?.position || { x: 0, y: 0 };
+      }
+      
+      const tentativePosition = {
+        x: startPosition.x + delta.x,
+        y: startPosition.y + delta.y,
       };
       
-      updatePosition(active.id as string, newPosition);
+      // Contraindre la position finale dans les limites du viewport
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+      
+      // Estimer la taille de l'élément (par défaut, on suppose une taille raisonnable)
+      const estimatedWidth = 400; // Largeur estimée
+      const estimatedHeight = 300; // Hauteur estimée
+      
+      const newPosition = {
+        x: Math.min(Math.max(0, tentativePosition.x), viewportWidth - estimatedWidth),
+        y: Math.min(Math.max(0, tentativePosition.y), viewportHeight - estimatedHeight),
+      };
+      
+      updatePosition(activeId, newPosition);
     }
 
     setActiveId(null);
@@ -313,7 +358,7 @@ export const DndKitWrapper: React.FC<DndKitWrapperProps> = ({ children }) => {
     <PositionContext.Provider value={elements}>
       <DndContext
         sensors={sensors}
-        modifiers={[restrictToBodyBounds]}
+        modifiers={[restrictToViewportBounds]}
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
       >

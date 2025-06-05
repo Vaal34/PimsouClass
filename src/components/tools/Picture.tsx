@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Resizable } from "react-resizable";
 import { DraggableWrapper } from "../DndKitWrapper";
 import { Button } from "../ui/button";
@@ -20,7 +20,12 @@ const ImageNotFound = ({ width, height }: { width: number; height: number }) => 
   </div>
 );
 
-export default function Picture() {
+interface PictureProps {
+  id?: string;
+  initialPosition?: { x: number; y: number };
+}
+
+export default function Picture({ id = "picture-item", initialPosition = { x: 700, y: 200 } }: PictureProps = {}) {
   const [size, setSize] = useState({ width: 300, height: 250 });
   const [isResizing, setIsResizing] = useState(false);
   const [imageUrl, setImageUrl] = useState("");
@@ -31,11 +36,44 @@ export default function Picture() {
   const [caption, setCaption] = useState("Image");
   const [isEditingCaption, setIsEditingCaption] = useState(false);
   const [tempCaption, setTempCaption] = useState("");
+  const [maxConstraints, setMaxConstraints] = useState<[number, number]>([2560, 1440]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const captionInputRef = useRef<HTMLInputElement>(null);
 
+  // Calculer les contraintes maximales basées sur la taille de la fenêtre
+  useEffect(() => {
+    const updateMaxConstraints = () => {
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+      // Laisser une marge de 20px de chaque côté
+      const maxWidth = Math.max(300, viewportWidth - 40);
+      const maxHeight = Math.max(250, viewportHeight - 40);
+      setMaxConstraints([maxWidth, maxHeight]);
+    };
+
+    updateMaxConstraints();
+    window.addEventListener('resize', updateMaxConstraints);
+    
+    return () => {
+      window.removeEventListener('resize', updateMaxConstraints);
+    };
+  }, []);
+
   const onResize = (_event: any, { size }: { size: { width: number; height: number } }) => {
     setSize(size);
+    
+    // Vérifier que l'élément ne dépasse pas les limites du viewport après redimensionnement
+    // Note: cette vérification est principalement préventive car les maxConstraints limitent déjà le redimensionnement
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    
+    if (size.width > viewportWidth - 40 || size.height > viewportHeight - 40) {
+      const constrainedSize = {
+        width: Math.min(size.width, viewportWidth - 40),
+        height: Math.min(size.height, viewportHeight - 40)
+      };
+      setSize(constrainedSize);
+    }
   };
 
   const onResizeStart = () => {
@@ -148,20 +186,20 @@ export default function Picture() {
 
   return (
     <DraggableWrapper
-      id="picture-item"
-      initialPosition={{ x: 700, y: 200 }}
+      id={id}
+      initialPosition={initialPosition}
       className={`${isResizing ? 'pointer-events-none' : 'cursor-grab active:cursor-grabbing'}`}
     >
-      <Resizable
-        width={size.width}
-        height={size.height}
-        onResize={onResize}
-        onResizeStart={onResizeStart}
-        onResizeStop={onResizeStop}
-        minConstraints={[300, 250]}
-        maxConstraints={[2560, 1440]}
-        resizeHandles={['se', 'e', 's']}
-      >
+              <Resizable
+          width={size.width}
+          height={size.height}
+          onResize={onResize}
+          onResizeStart={onResizeStart}
+          onResizeStop={onResizeStop}
+          minConstraints={[300, 250]}
+          maxConstraints={maxConstraints}
+          resizeHandles={['se', 'e', 's']}
+        >
         <div 
           style={{ width: size.width, height: size.height }}
           onMouseDown={(e) => {
